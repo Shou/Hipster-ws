@@ -42,21 +42,6 @@ const St = imports.gi.St
 // - Listen to URGENT windows and glow (not flash) workspace.
 // - Clickable and scrollable workspaces.
 
-// {{{ Utils
-
-function or(xs) {
-    for (var i = 0; i < xs.length; i++) if (xs[i]) return true
-    return false
-}
-
-function map(f, xs) {
-    var tmp = []
-    for (var i = 0; i < xs.length; i++) tmp.push(f(xs[i]))
-    return tmp
-}
-
-// }}}
-
 
 // | classes can go to hell!!!
 // Workspaces :: IO Widget
@@ -101,9 +86,6 @@ function Workspaces(){
 function refresh(){
     log("-- hipster: Change!")
     if (workspaces === null) workspaces = Workspaces()
-    let obj = []
-    for (var name in workspaces) obj.push(name)
-    log(obj)
     let ws = workspaces.actor.get_children()[0].get_children()
     for (var i = 0; i < ws.length - 1; i++) {
         if (ws[i].has_style_class_name("hipster-ws")
@@ -136,7 +118,7 @@ let appMenu
 
 // init :: IO ()
 function init(){
-    log("-- hipster: Initialising...")
+    log("-- hipster: Initializing...")
     appMenu = Main.panel.statusArea.appMenu
     workspaces = Workspaces()
     log("-- hipster: Workspaces made!")
