@@ -39,8 +39,7 @@ const St = imports.gi.St
 //      - Colours.
 //      - Font.
 // - Default colours.
-// - Listen to URGENT windows and glow (not flash) workspace.
-// - Clickable and scrollable workspaces.
+// - Glow (not flash or static color change) workspace.
 
 
 let keyDown = false
@@ -59,12 +58,10 @@ function mkWorkspace(i){
 
     con.reactive = true
     con.connect("button-press-event", function(a, e){
-        log(i)
         global.screen.get_workspace_by_index(i).activate(1)
     })
     con.connect("enter-event", function(a, e){
         if (keyDown){
-            log(i)
             global.screen.get_workspace_by_index(i).activate(1)
         }
     })
@@ -82,8 +79,6 @@ function Workspaces(){
     log("-- hipster: wscounter: " + wscounter)
 
     for (let i = 0; i < wscounter; i++) {
-        /* TODO clickable/scrollable workspaces
-        */
         let con = mkWorkspace(i)
         topBox.add_actor(con)
     }
@@ -96,11 +91,9 @@ function Workspaces(){
 
     topBox.reactive = true
     topBox.connect("button-press-event", function(a, e){
-        log("hi")
         keyDown = true
     })
     topBox.connect("button-release-event", function(a, e){
-        log("bye")
         keyDown = false
     })
 
@@ -111,23 +104,29 @@ function Workspaces(){
 }
 
 // refresh :: IO ()
-function refresh(){
-    log("-- hipster: Change!")
+function refresh(e, a){
     let wscounter = global.screen.n_workspaces
     if (workspaces === null) workspaces = Workspaces()
     let ws = workspaces.actor.get_children()[0].get_children()
     for (var i = 0; i < ws.length - 1; i++) {
         if (ws[i].has_style_class_name("hipster-ws")) {
+
             // Remove highlighting.
             ws[i].remove_style_class_name("hipster-ws-current")
-            // Add highlighting.
-            if (global.screen.get_active_workspace_index() == i)
+
+            if (global.screen.get_active_workspace_index() == i) {
+                // Add highlighting.
                 ws[i].add_style_class_name("hipster-ws-current")
+
+                // Remove flash.
+                ws[i].remove_style_class_name("hipster-ws-urgent")
+            }
+
             // Remove old workspace.
             if (i >= wscounter) ws[i].destroy()
         }
     }
-    log("wscounter: " + wscounter + ", ws: " + ws.length)
+
     // Add new workspace.
     if (wscounter > ws.length - 1) {
         workspaces.actor.get_children()[0].insert_child_below(
@@ -137,18 +136,48 @@ function refresh(){
     }
 }
 
-// TODO
-//function flash(
-
-// connectAndTrack :: Widget -> String -> IO () -> IO ()
-function connectAndTrack(s, n, f){
-    let id = s.connect(n, f)
-    log(id)
+// flash :: Int -> IO ()
+function flash(n) {
+    let currws = global.screen.get_active_workspace_index()
+    if (currws != n) {
+        let w = workspaces.actor.get_children()[0].get_children()[n]
+        w.add_style_class_name("hipster-ws-urgent")
+    }
 }
 
-// addClickEvent :: Widget -> IO () -> IO ()
-function addClickEvent(s, f){
-    s.connect("enter-event", Lang.bind(s, f))
+// urgent :: e -> a -> IO ()
+function urgent(e, a) {
+    let tr = Shell.WindowTracker.get_default()
+    let app = tr.get_window_app(a)
+    let ws = getWindowsAndWorkspaces()
+
+    for (let i in ws) {
+        let b = false
+        for (let j in ws[i]) {
+            let app2 = tr.get_window_app(ws[i][j])
+            if (app.get_id() === app2.get_id()) {
+                flash(i)
+                b = true
+                break
+            }
+        }
+        if (b) break
+    }
+}
+
+// getWindowsAndWorkspaces :: IO (Int, [Window])
+function getWindowsAndWorkspaces(){
+    let display = global.screen.get_display()
+    let windows = {}
+    for (let i = 0; i < global.screen.n_workspaces; i++) {
+        let ws = display.get_tab_list( Meta.TabList.NORMAL
+                                     , global.screen
+                                     , global.screen.get_workspace_by_index(i)
+                                     )
+        windows[i] = ws
+    }
+
+    return windows
 }
 
 // {{{ Init
@@ -165,11 +194,8 @@ function init(){
     appMenu = Main.panel.statusArea.appMenu
     workspaces = Workspaces()
     log("-- hipster: Workspaces made!")
-    connectAndTrack( global.window_manager
-                   , "switch-workspace"
-                   , Lang.bind(workspaces, refresh)
-                   )
-    //connectAndTrack( global.display, "window-marked-urgent", flash)
+    global.window_manager.connect("switch-workspace", refresh)
+    global.display.connect("window-marked-urgent", urgent)
 }
 
 // enable :: IO ()
