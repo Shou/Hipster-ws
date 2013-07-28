@@ -9,6 +9,10 @@ managers, for the hipster pseudo-NEET scum who loves retro looks.
 Something worth noting is that it works along with the "Status title bar"
 extension.
 
+Also, you need to change the workspace names manually either through
+`dconf-editor` with the value `org.gnome.desktop.wm.preferences.workspace-names`
+or a GNOME Shell extension.
+
 ## Styling
 
 It only has two classes,
