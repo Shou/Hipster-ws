@@ -20,6 +20,6 @@ It only has two classes,
 
 For workspaces that aren't visible.
 
-* `hipster-ws-current`
+* `.hipster-ws-current`
 
 For the currently visible workspace.
