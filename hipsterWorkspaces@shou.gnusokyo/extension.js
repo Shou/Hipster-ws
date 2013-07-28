@@ -40,6 +40,7 @@ const St = imports.gi.St
 //      - Font.
 // - Default colours.
 // - Glow (not flash or static color change) workspace.
+// - Keep previous desktop so we can 'toggle' between two?
 
 
 let keyDown = false

@@ -4,7 +4,7 @@ Hipster-ws
 A GNOME Shell workspace indicator much like the ones you find in tiling window
 managers, for the hipster pseudo-NEET scum who loves retro looks.
 
-<img src=http://a.pomf.se/9Tx7.png /> (Haskell logo not included)
+<img src=http://a.pomf.se/3In6.gif /> (Haskell logo not included)
 
 The workspaces are clickable, and you can hold the button down and swipe it
 through them. It works along with the "Status title bar" extension as can be
