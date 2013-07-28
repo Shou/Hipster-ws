@@ -43,6 +43,35 @@ const St = imports.gi.St
 // - Clickable and scrollable workspaces.
 
 
+let keyDown = false
+
+
+// mkWorkspace :: Int -> IO Widget
+function mkWorkspace(i){
+    let className = "hipster-ws"
+    if (global.screen.get_active_workspace_index() == i)
+        className += " hipster-ws-current"
+
+    let con = new St.Bin({ style_class: className })
+    let txt = Meta.prefs_get_workspace_name(i)
+    let lab = new St.Label({ text: txt })
+    con.set_child(lab)
+
+    con.reactive = true
+    con.connect("button-press-event", function(a, e){
+        log(i)
+        global.screen.get_workspace_by_index(i).activate(1)
+    })
+    con.connect("enter-event", function(a, e){
+        if (keyDown){
+            log(i)
+            global.screen.get_workspace_by_index(i).activate(1)
+        }
+    })
+
+    return con
+}
+
 // | classes can go to hell!!!
 // Workspaces :: IO Widget
 function Workspaces(){
@@ -53,21 +82,9 @@ function Workspaces(){
     log("-- hipster: wscounter: " + wscounter)
 
     for (let i = 0; i < wscounter; i++) {
-        let className = "hipster-ws"
-        if (global.screen.get_active_workspace_index() == i)
-            className += " hipster-ws-current"
-
-        let con = new St.Bin({ style_class: className })
-        let txt = Meta.prefs_get_workspace_name(i)
-        let lab = new St.Label({ text: txt })
-        con.set_child(lab)
-        /* TODO clickable workspaces, maybe scrollable
-        addClickEvent(con, function(wsindex){
-            return function(){
-                global.screen.get_workspace_by_index(wsindex).activate(1)
-            }
-        }(i))
+        /* TODO clickable/scrollable workspaces
         */
+        let con = mkWorkspace(i)
         topBox.add_actor(con)
     }
 
@@ -77,6 +94,17 @@ function Workspaces(){
     con.set_child(lab)
     topBox.add_actor(con)
 
+    topBox.reactive = true
+    topBox.connect("button-press-event", function(a, e){
+        log("hi")
+        keyDown = true
+    })
+    topBox.connect("button-release-event", function(a, e){
+        log("bye")
+        keyDown = false
+    })
+
+
     btn.actor.add_actor(topBox)
 
     return btn
@@ -85,17 +113,32 @@ function Workspaces(){
 // refresh :: IO ()
 function refresh(){
     log("-- hipster: Change!")
+    let wscounter = global.screen.n_workspaces
     if (workspaces === null) workspaces = Workspaces()
     let ws = workspaces.actor.get_children()[0].get_children()
     for (var i = 0; i < ws.length - 1; i++) {
-        if (ws[i].has_style_class_name("hipster-ws")
-        || ws[i].has_style_class_name("hipster-ws-current")) {
+        if (ws[i].has_style_class_name("hipster-ws")) {
+            // Remove highlighting.
             ws[i].remove_style_class_name("hipster-ws-current")
+            // Add highlighting.
             if (global.screen.get_active_workspace_index() == i)
                 ws[i].add_style_class_name("hipster-ws-current")
+            // Remove old workspace.
+            if (i >= wscounter) ws[i].destroy()
         }
     }
+    log("wscounter: " + wscounter + ", ws: " + ws.length)
+    // Add new workspace.
+    if (wscounter > ws.length - 1) {
+        workspaces.actor.get_children()[0].insert_child_below(
+            mkWorkspace(wscounter - 1),
+            ws[ws.length - 1]
+        )
+    }
 }
+
+// TODO
+//function flash(
 
 // connectAndTrack :: Widget -> String -> IO () -> IO ()
 function connectAndTrack(s, n, f){
@@ -126,14 +169,7 @@ function init(){
                    , "switch-workspace"
                    , Lang.bind(workspaces, refresh)
                    )
-    /*
-    connectAndTrack( global.display
-                   , "window-marked-urgent"
-                   , Lang.bind(workspaces, function(){
-                        
-                     })
-                   )
-    */
+    //connectAndTrack( global.display, "window-marked-urgent", flash)
 }
 
 // enable :: IO ()
