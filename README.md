@@ -14,6 +14,12 @@ Also, you need to change the workspace names manually either through
 `dconf-editor` with the value `org.gnome.desktop.wm.preferences.workspace-names`
 or a GNOME Shell extension.
 
+## Installing
+
+Put the `hipsterWorkspaces@shou.gnusokyo` folder in
+`~/.local/share/gnome-shell/extensions/` and restart GNOME Shell by typing `r`
+in the run prompt (Alt-F2 by default).
+
 ## Styling
 
 It only has four CSS classes,
