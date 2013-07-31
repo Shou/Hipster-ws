@@ -24,43 +24,18 @@ in the run prompt (Alt-F2 by default).
 
 It only has four CSS classes,
 * `.hipster-ws`
-
 Normal workspace color.
 
 * `.hipster-ws-current`
-
 Highlight current workspace.
 
 * `.hipster-ws-urgent`
-
 Highlight urgent workspace.
 
 * `.hipster-separator`
-
 For the `::` separator.
 
-You have to add style rules to your current theme's `gnome-shell.css` file,
-either found in `~/.themes/<your current theme>/gnome-shell/gnome-shell.css`
-or in `/usr/share/gnome-shell/theme/gnome-shell.css`.
+You can edit the default `stylesheet.css` file included with the extension in
+its folder
+`~/.local/share/gnome-shell/extensions/hipsterWorkspaces@shou.gnusokyo`.
 
-For example, here is what I added to the bottom of my `gnome-shell.css`:
-
-```
-.hipster-ws {
-    font-family: droid sans mono;
-    color: #d0d0d0 !important;
-    padding: 0px 4px;
-}
-
-.hipster-ws-current {
-    color: #e78584 !important;
-}
-
-.hipster-ws-urgent {
-    color: #ff0090 !important;
-}
-
-.hipster-separator {
-    padding: 0px 4px;
-}
-```

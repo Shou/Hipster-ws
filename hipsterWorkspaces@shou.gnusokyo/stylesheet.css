@@ -1,0 +1,18 @@
+
+.hipster-ws {
+    font-family: droid sans mono;
+    color: #d0d0d0;
+    padding: 0px 4px;
+}
+
+.hipster-ws-current {
+    color: #e78584;
+}
+
+.hipster-ws-urgent {
+    color: #ff0090;
+}
+
+.hipster-separator {
+    padding: 0px 4px;
+}
