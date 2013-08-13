@@ -48,6 +48,7 @@ let keyDown = false
 
 // mkWorkspace :: Int -> IO Widget
 function mkWorkspace(i){
+    log("-- hipster: mkWs " +  i)
     let className = "hipster-ws"
     if (global.screen.get_active_workspace_index() == i)
         className += " hipster-ws-current"
@@ -107,7 +108,8 @@ function Workspaces(){
 // refresh :: IO ()
 function refresh(e, a){
     let wscounter = global.screen.n_workspaces
-    if (workspaces === null) workspaces = Workspaces()
+    // This should never happen!!!
+    //if (workspaces === null) workspaces = Workspaces()
     let ws = workspaces.actor.get_children()[0].get_children()
     for (var i = 0; i < ws.length - 1; i++) {
         if (ws[i].has_style_class_name("hipster-ws")) {
@@ -129,9 +131,10 @@ function refresh(e, a){
     }
 
     // Add new workspace.
-    if (wscounter > ws.length - 1) {
+    for (var i = 0; i < wscounter - ws.length; i++) {
+        log(i)
         workspaces.actor.get_children()[0].insert_child_below(
-            mkWorkspace(wscounter - 1),
+            mkWorkspace(ws.length - 1 + i),
             ws[ws.length - 1]
         )
     }
