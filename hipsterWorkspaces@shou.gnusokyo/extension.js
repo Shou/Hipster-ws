@@ -131,8 +131,7 @@ function refresh(e, a){
     }
 
     // Add new workspace.
-    for (var i = 0; i < wscounter - ws.length; i++) {
-        log(i)
+    for (var i = 0; i < wscounter - ws.length + 1; i++) {
         workspaces.actor.get_children()[0].insert_child_below(
             mkWorkspace(ws.length - 1 + i),
             ws[ws.length - 1]
