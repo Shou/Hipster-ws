@@ -2,7 +2,7 @@
 // {{{ License
 
 /* Copyright (C) 2013
- *      Shou <gnusokyo@gmail.com>
+ *      Shou <x@shou.io>
  *
  * This file is part of Hipster-ws.
  *
